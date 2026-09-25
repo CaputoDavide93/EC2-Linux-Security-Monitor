@@ -1,0 +1,27 @@
+# Security Monitor .gitignore
+
+# Runtime artefacts (these live under /var on an installed host, never in the repo,
+# but guard against a stray local test run writing them here)
+status.json
+scan-*.log
+*.log
+
+# Local config overrides — the committed security-monitor.conf is the default
+security-monitor.local.conf
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# OS files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Backup files
+*.bak
+*.backup
