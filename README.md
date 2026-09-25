@@ -5,8 +5,8 @@
 **ClamAV malware scanning with quarantine and alerting, automatic security updates, and a terminal status dashboard for systemd Linux — built for EC2, tested on Ubuntu and Amazon Linux**
 
 ![Shell](https://img.shields.io/badge/Shell-Bash%204.0%2B-4EAA25?logo=gnu-bash&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-systemd-FCC624?logo=linux&logoColor=black)
 ![ClamAV](https://img.shields.io/badge/ClamAV-on--demand-FF0000?logo=hackaday&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-systemd-FCC624?logo=linux&logoColor=black)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 [![Lint](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/actions/workflows/lint.yml/badge.svg)](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/actions/workflows/lint.yml)
 
