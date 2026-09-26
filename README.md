@@ -35,14 +35,14 @@
 
 ## 🗺️ Architecture
 
-Two scripts. `security-manager` installs and maintains; `security-monitor` scans and reports.
-Both read the same config file, so a schedule or path is stated in exactly one place.
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/architecture-dark.svg">
   <img src="docs/assets/architecture-light.svg" width="100%"
-       alt="The scan timer runs security-monitor, which refreshes definitions, applies updates, scans with clamscan and writes status.json; infected files are quarantined and alerted on, and the status dashboard reads the result. The health timer runs security-manager, which repairs services, definitions and timers. Both scripts source one config file.">
+       alt="The scan timer runs security-monitor, which refreshes definitions and scans with ClamAV, applies package updates with apt or dnf, writes status.json and quarantines infected files, and pipes findings to ALERT_COMMAND; the status dashboard reads status.json, and the health timer runs security-manager, which repairs services, definitions and timers, with both scripts sourcing one config file.">
 </picture>
+
+Two scripts. `security-manager` installs and maintains; `security-monitor` scans and reports.
+Both read the same config file, so a schedule or path is stated in exactly one place.
 
 A single scan runs three steps, then persists a result the dashboard can read:
 
