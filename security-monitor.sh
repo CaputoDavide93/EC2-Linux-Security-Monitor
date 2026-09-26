@@ -357,7 +357,9 @@ save_scan_results() {
                 updates_available: $upd,
                 updates_applied: $app
              }' > "$STATUS_FILE"
-        chmod 640 "$STATUS_FILE" 2>/dev/null || true
+        # World-readable on purpose: it holds only counts and timestamps, and
+        # `security-monitor status` is documented to work without sudo.
+        chmod 644 "$STATUS_FILE" 2>/dev/null || true
     else
         print_status "$YELLOW" "⚠" "jq not installed, status.json not written"
     fi
