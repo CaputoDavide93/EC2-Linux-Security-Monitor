@@ -48,7 +48,8 @@ sudo ./security-manager.sh install
 - **Scan logs** (`/var/log/security-monitor/scan-*.log`) contain absolute paths of scanned
   and infected files — that is a map of the filesystem. Treat them as confidential. They are
   pruned after `LOG_RETENTION_DAYS` (default 30).
-- **`status.json`** is written `0640` and holds counts and timestamps only.
+- **`status.json`** is written `0644` (world-readable, so the dashboard runs without root) and
+  holds counts and timestamps only.
 - **Quarantine** (`$QUARANTINE_DIR`, `0700`, root-owned) contains **live malware**. Files are
   moved rather than deleted so false positives are recoverable — which means the directory is
   hostile. Don't back it up to shared storage, don't copy files out of it to inspect them on

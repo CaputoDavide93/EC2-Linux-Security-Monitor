@@ -16,7 +16,7 @@ git checkout -b feature/your-feature
 
 ## 🧪 Before you open a PR
 
-CI ([lint.yml](.github/workflows/lint.yml)) runs these on every push and PR. Run them
+CI ([lint.yml](.github/workflows/lint.yml)) runs these on every push to `main` and every PR. Run them
 locally first — they're the whole gate:
 
 ```bash

@@ -7,7 +7,7 @@
 ![Shell](https://img.shields.io/badge/Shell-Bash%204.0%2B-4EAA25?logo=gnu-bash&logoColor=white)
 ![ClamAV](https://img.shields.io/badge/ClamAV-on--demand-FF0000?logo=hackaday&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-systemd-FCC624?logo=linux&logoColor=black)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
+![License: MIT](https://img.shields.io/badge/License-MIT-green)
 [![Lint](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/actions/workflows/lint.yml/badge.svg)](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/actions/workflows/lint.yml)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Testing](#-testing) • [Contributing](#-contributing)
@@ -54,7 +54,9 @@ A single scan runs three steps, then persists a result the dashboard can read:
 
 ---
 
-## 📋 Prerequisites
+## 🚀 Quick Start
+
+### Prerequisites
 
 | Requirement | Notes |
 |-------------|-------|
@@ -63,7 +65,7 @@ A single scan runs three steps, then persists a result the dashboard can read:
 | Root access | `install`, `uninstall`, `health`, and `scan` need root. `status` does **not** |
 | Internet access | To download ClamAV packages and virus definitions |
 
-### Supported distributions
+#### Supported distributions
 
 ✅ **Ubuntu / Debian** (`apt`, `unattended-upgrades`) — ✅ **Amazon Linux 2023** (`dnf`, `dnf-automatic`)
 
@@ -71,9 +73,7 @@ A single scan runs three steps, then persists a result the dashboard can read:
 code also recognises `rhel`/`centos`/`fedora` for service and package-manager naming, but
 those are untested and the installer won't set them up.
 
----
-
-## 🚀 Quick Start
+### Install
 
 ```bash
 git clone https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor.git
@@ -226,7 +226,7 @@ them with `apt-get remove --purge 'clamav*'` or `dnf remove 'clamav*'`.
 
 ### Scan results
 
-`$SECURITY_DIR/status.json` (mode `0640`) holds the last result. Counts are JSON numbers:
+`$SECURITY_DIR/status.json` (mode `0644`, so `status` works without root) holds the last result. Counts are JSON numbers:
 
 ```json
 {
@@ -244,9 +244,7 @@ them with `apt-get remove --purge 'clamav*'` or `dnf remove 'clamav*'`.
 `scan_status` is `clean`, `attention` (infected files found), or `error` (clamscan failed to
 run — exit code 2 or above).
 
----
-
-## ⏰ Automated Monitoring
+### Automated monitoring
 
 `install` creates and enables two timers:
 
@@ -282,6 +280,9 @@ EC2-Linux-Security-Monitor/
 ├── security-monitor.sh       # 🛡️ scanning, quarantine, alerting, dashboard
 ├── security-manager.sh       # 🔧 install, uninstall, health check
 ├── security-monitor.conf     # ⚙️ default config, installed to /etc/security-monitor/
+├── .gitignore                # 🙈 keeps local junk out of git
+├── AGENTS.md                 # 🤖 rules for coding agents
+├── CLAUDE.md                 # 🤖 imports AGENTS.md for Claude Code
 ├── CONTRIBUTING.md           # 🤝 how to contribute
 ├── SECURITY.md               # 🔒 vulnerability reporting
 └── LICENSE                   # 📄 MIT
@@ -292,7 +293,8 @@ EC2-Linux-Security-Monitor/
 ## 🧪 Testing
 
 There is no automated test suite. CI ([lint.yml](.github/workflows/lint.yml)) lints both
-scripts, checks syntax, and validates the config and timer schedules on every push and PR:
+scripts, checks syntax, and validates the config and timer schedules on every push to `main` and
+every pull request:
 
 ```bash
 shellcheck --severity=warning security-monitor.sh security-manager.sh
