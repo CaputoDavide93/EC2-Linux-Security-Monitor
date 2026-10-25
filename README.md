@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/brand/icon.svg" width="96" alt="EC2 Linux Security Monitor icon: a shield with a terminal prompt">
+<img src="docs/assets/brand/icon.svg" width="96" alt="EC2 Linux Security Monitor icon: a shield with a check mark">
 
 # 🛡️ EC2 Linux Security Monitor
 
@@ -320,12 +320,12 @@ EC2-Linux-Security-Monitor/
 │   └── troubleshooting.md    # 🛠️ by symptom
 ├── tools/
 │   ├── gen_diagram.py        # 🖌️ draws the diagrams
-│   ├── social_preview.py     # 🖼️ draws the social preview image
+│   ├── brand/                # 🎨 vendored brand kit: icon check and social preview
 │   └── screenshots/          # 📸 dashboard screenshots from the real script
 ├── security-monitor.sh       # 🛡️ scanning, quarantine, alerting, dashboard
 ├── security-manager.sh       # 🔧 install, uninstall, health check
 ├── security-monitor.conf     # ⚙️ default config, installed to /etc/security-monitor/
-├── Makefile                  # ✅ make check, diagram, screenshots
+├── Makefile                  # ✅ make check, diagram, icon-check, screenshots, social-preview
 ├── llms.txt                  # 🔎 one-page summary for AI search
 ├── AGENTS.md                 # 🤖 rules for coding agents
 ├── CLAUDE.md                 # 🤖 imports AGENTS.md for Claude Code
