@@ -17,9 +17,10 @@ git checkout -b feature/your-feature
 ## 🧪 Before you open a PR
 
 CI ([lint.yml](.github/workflows/lint.yml)) runs these on every push to `main` and every PR. Run them
-locally first — they're the whole gate:
+locally first. They're the whole gate:
 
 ```bash
+make check    # runs everything below plus the diagram check
 shellcheck --severity=warning security-monitor.sh security-manager.sh
 bash -n security-monitor.sh && bash -n security-manager.sh
 bash -n security-monitor.conf && ( set -eu; . ./security-monitor.conf )
@@ -31,7 +32,7 @@ If you changed a schedule default, validate it:
 systemd-analyze calendar "*-*-* 02:00:00"
 ```
 
-There is **no automated test suite** — so exercising your change on a real host matters.
+There is **no automated test suite**, so exercising your change on a real host matters.
 Ubuntu and Amazon Linux 2023 are the two supported targets; say in the PR which you tested
 on. A cheap way to test a scan end to end without real malware is the EICAR test file:
 
@@ -46,11 +47,11 @@ sudo security-monitor scan
 
 Both scripts are `set -euo pipefail` Bash. Beyond shellcheck:
 
-- **Quote every expansion** — `"$var"`, `"${arr[@]}"`. Use arrays for argument lists, never
+- **Quote every expansion**: `"$var"`, `"${arr[@]}"`. Use arrays for argument lists, never
   a string you rely on word-splitting.
 - **Never call a function inside `$(( ))`.** Bash treats the name as an unset variable, so
   the call silently evaluates to `0`. Use `func || rc=$?`.
-- **Don't capture a function's stdout with `$(...)` if it also prints progress** — the
+- **Don't capture a function's stdout with `$(...)` if it also prints progress**, the
   progress disappears. Return values through a global instead.
 - **`systemctl is-active` with multiple units is an AND**, and unit names differ per distro.
   Resolve the name through `clamd_unit()`.
@@ -63,7 +64,7 @@ Both scripts are `set -euo pipefail` Bash. Beyond shellcheck:
 
 **The dashboard and the README must never state something the code doesn't check.** No
 hardcoded dates, no placeholder status text, no fabricated "Type: all packages current"
-lines. If a value can't be determined, say `unknown` — don't invent a plausible one.
+lines. If a value can't be determined, say `unknown`, don't invent a plausible one.
 
 ---
 
@@ -77,9 +78,9 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`.
 
 ---
 
-## 🐛 Bug reports
+## 🐛 Reporting an environment or a bug
 
-Include the distribution and version, `bash --version`, `security-monitor version`, the
+This is the most useful contribution: tell us what works and what does not. Say which distribution, release and instance type you ran it on, and whether you ran the installer or only a scan. Include the distribution and version, `bash --version`, `security-monitor version`, the
 exact command, and what you expected versus what happened. For scheduling problems add
 `systemctl list-timers 'security-monitor-*'` and
 `journalctl -u security-monitor-scan.service`.
@@ -94,4 +95,4 @@ Open an issue with the use case, the security benefit, and which distros it woul
 
 ## 🔒 Security issues
 
-Don't open a public issue — see [SECURITY.md](SECURITY.md).
+Do not open a public issue. See [SECURITY.md](SECURITY.md).

@@ -1,0 +1,29 @@
+# EC2 Linux Security Monitor
+
+> EC2 Linux Security Monitor is a free, open-source (MIT) pair of Bash scripts that scan a Linux server for malware with ClamAV, move infected files to a quarantine directory, apply security updates, and show a status dashboard. It is built for EC2 instances running Ubuntu, Debian or Amazon Linux 2023, and works on any systemd server of those distributions. It needs no account, no agent from a vendor and no cloud service. A daily systemd timer scans, a six-hourly timer repairs dead services, stale signatures and stopped timers, and `security-monitor status` shows the real state over SSH without root.
+
+Key facts:
+
+- Tested: the scan, EICAR test-file detection, quarantine, status.json and the status dashboard were run in an Ubuntu 24.04 container. The installer and systemd timers were not run there. Amazon Linux 2023 and real EC2 instances are unverified in the latest pass. RHEL, CentOS and Fedora are recognised by the scan code but refused by the installer.
+- Install: clone the repository, `chmod +x security-monitor.sh security-manager.sh`, then `sudo ./security-manager.sh install`. Run `sudo security-monitor scan`, then `security-monitor status`.
+- Requirements: Linux with systemd, Bash 4.0 or newer, root access, outbound internet access for ClamAV packages and signatures.
+- Scanning: quick mode (30 to 90 seconds on small instances) covers /home and /root by default; full mode (10 to 30 minutes) covers /home /root /opt /tmp /var /usr/local. Paths are set in /etc/security-monitor/security-monitor.conf.
+- Quarantine: infected files are moved, never deleted, to a root-owned 0700 directory. Setting QUARANTINE_ENABLED="no" reports without moving.
+- Alerts: the command in ALERT_COMMAND receives the findings on stdin, only when a scan finds infected files. It can send mail, publish to SNS, or call a webhook.
+- Updates: every scan applies pending apt or dnf updates, and the installer enables the distribution's unattended-update tool.
+- Privacy: no telemetry. Data leaves the host only through ClamAV and package downloads and through ALERT_COMMAND.
+- Trade-off: each host runs on its own. There is no central console and no real-time protection, only scheduled on-demand scans.
+- Risk: the scripts run as root and apply updates unattended. Read them before installing.
+
+## Docs
+
+- [README](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/blob/main/README.md): why it exists, comparison, install, configuration, command reference
+- [Setup](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/blob/main/docs/setup.md): first install, first scan, alerts, removal
+- [FAQ](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/blob/main/docs/faq.md): supported systems, data, false positives, fleets
+- [Troubleshooting](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/blob/main/docs/troubleshooting.md): symptoms and fixes
+- [How it works](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/blob/main/docs/how-it-works.md): one scan, the timers, the dashboard, the health check
+- [Security policy](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/blob/main/SECURITY.md): what the installer changes, how to report a vulnerability
+
+## Optional
+
+- [Contributing](https://github.com/CaputoDavide93/EC2-Linux-Security-Monitor/blob/main/CONTRIBUTING.md): reporting a tested system, local checks
