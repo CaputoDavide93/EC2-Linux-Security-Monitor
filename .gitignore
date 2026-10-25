@@ -25,3 +25,7 @@ security-monitor.local.conf
 # Backup files
 *.bak
 *.backup
+
+# Screenshot tooling
+.venv-screenshots/
+__pycache__/
