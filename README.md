@@ -328,8 +328,7 @@ EC2-Linux-Security-Monitor/
 ├── security-monitor.conf     # ⚙️ default config, installed to /etc/security-monitor/
 ├── Makefile                  # ✅ make check, diagram, icon-check, screenshots, social-preview
 ├── llms.txt                  # 🔎 one-page summary for AI search
-├── AGENTS.md                 # 🤖 rules for coding agents
-├── CLAUDE.md                 # 🤖 imports AGENTS.md for Claude Code
+├── AGENTS.md                 # 🤖 index for anyone changing the repo: checks, layout, rules
 ├── CONTRIBUTING.md           # 🤝 how to contribute and report systems
 ├── SECURITY.md               # 🔒 vulnerability reporting, what the tool changes
 └── LICENSE                   # 📄 MIT
