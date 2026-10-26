@@ -311,7 +311,7 @@ the unit files directly works too, but `install` will overwrite them.
 EC2-Linux-Security-Monitor/
 ├── .github/
 │   ├── dependabot.yml        # 🔄 monthly GitHub Actions updates
-│   └── workflows/lint.yml              # 🧪 shellcheck, bash -n, diagram check, OnCalendar validation
+│   └── workflows/lint.yml    # 🧪 shellcheck, bash -n, diagram check, OnCalendar validation
 ├── docs/
 │   ├── assets/               # 🗺️ diagrams, screenshots, brand icon, social preview
 │   ├── README.md             # 📚 docs index
