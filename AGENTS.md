@@ -1,41 +1,14 @@
 # Agent instructions
 
-This repository follows Davide Caputo's house standards. The full spec is
-[`reference/STYLE.md` in repo-standards](https://github.com/CaputoDavide93/repo-standards/blob/main/reference/STYLE.md)
-(private). When this summary and the spec disagree, the spec wins.
+Two root-run Bash scripts for Ubuntu, Debian and Amazon Linux 2023, installed on servers. This file is the single index for anyone, human or tool, changing the repo.
 
-## Rules that apply to every change
+## Check
 
-- **Documentation never lies.** Every command, flag, feature, count and badge must be true of the code. Verify before writing; delete what you can't verify. No hand-typed counts that can drift.
-- **Commits:** conventional (`fix:`, `feat:`, `docs:`, `refactor:`, `ci:`, `chore:`), authored by the repo owner. **Never** add `Co-Authored-By`, `Claude-Session`, "Generated with …" or any other AI attribution — not in commits, PR bodies, issues or comments.
-- **Never** force-push the default branch, commit secrets, or change runtime identifiers (env var names, container/image names, bundle IDs, entity IDs, public URLs) as a side effect.
-- Run the repo's own checks (tests, lint, build, `python3 tools/gen_diagram.py --check`) before and after; anything green before stays green.
-- **Apps** also follow [`reference/APPS.md`](https://github.com/CaputoDavide93/repo-standards/blob/main/reference/APPS.md): private by design, copy in ARB/strings files (never hard-coded), theme tokens only, light and dark, 2× text, the security baseline, failing-first regression tests, and nothing in docs or store listings the code doesn't back. Apps are free: no purchases, no ads, no billing or ad SDKs. Every app has a public privacy policy and contact page (its own `<app>-site` repo on GitHub Pages, from `assets/app/site/`), linked from Settings, and an in-app Philosophy page (APPS.md §15). The only contact address is caputodav@gmail.com. Apps for children under about 5 also follow [`reference/KIDS.md`](https://github.com/CaputoDavide93/repo-standards/blob/main/reference/KIDS.md): check every feature against it and the app's `docs/research.md`; nothing leaves the device; nothing plays by itself for babies; no "approved" or developmental claims.
-- **Store submissions** follow [`reference/STORES.md`](https://github.com/CaputoDavide93/repo-standards/blob/main/reference/STORES.md): permanent IDs decided first, an upload key outside the repo (never debug), store-sized screenshots, every store answer written in `docs/store-forms.md` and true of the build, and in children's apps the sum in front of every link and permission prompt.
-- **Real iPhones through another Mac** (a newer iOS than your Xcode, or the phone is plugged in elsewhere): follow [`reference/IOS-REMOTE-BUILD.md`](https://github.com/CaputoDavide93/repo-standards/blob/main/reference/IOS-REMOTE-BUILD.md). SSH with a key only, never a password; committed code only; ask the owner for the steps only they can do.
-- **Real Android phones through another Mac:** follow [`reference/ANDROID-REMOTE-INSTALL.md`](https://github.com/CaputoDavide93/repo-standards/blob/main/reference/ANDROID-REMOTE-INSTALL.md). Build from a clean commit, check the permissions with `aapt2 dump badging`, install with `install-on-android.sh`; never uninstall someone's copy without asking.
+`make check` is the gate and the same thing CI runs: `bash -n`, `shellcheck --severity=warning`, the config sourcing cleanly, and `python3 tools/gen_diagram.py --check`. There is no test suite. The systemd `OnCalendar` validation runs only in CI. Run `make check` before and after every change; green stays green.
 
-## README
+Other targets: `make diagram` (redraw `docs/assets/*.svg`), `make icon-check`, `make screenshots` and `make social-preview` (need extra tools, not part of CI).
 
-- Centered header: one emoji H1 (the same emoji as the GitHub description), a **bold** one-line tagline, flat shields.io badges (tech → platform → license → live CI; no `style=`), then `---`.
-- Emoji `##` headings in the canonical order, `---` between sections, features as an emoji-lead table, a repo tree in a ` ```text ` block that matches `git ls-files`.
-- `## 🗺️ Architecture` opens with the house-kit diagram: `tools/gen_diagram.py` writes `docs/assets/architecture-{light,dark}.svg`, embedded with `<picture>` (dark `<source>` + light `<img width="100%">` + a one-sentence alt). No Mermaid for architecture, no ASCII boxes.
-- Screenshots live in `docs/assets/screenshots/<screen>-{light,dark}.png`; public repos use demo data only.
-- The README ends with `---` and then exactly:
-  `<p align="center"><sub>Made with ❤️ by <a href="https://github.com/CaputoDavide93">Davide Caputo</a></sub></p>`
-  (translated only when the README body is in another language). No star request, no extra lines.
-
-## Layout and naming
-
-- Directories `lowercase-kebab`; docs `docs/lowercase-kebab.md`; shell scripts `kebab-case.sh`; Python `snake_case`; TS/JS modules `kebab-case`, React components `PascalCase.tsx`. Toolchain rules win (Xcode targets, HA `custom_components/<domain>`, Python import names, Kotlin packages, ESPHome/HA `.yaml`).
-- Root holds only README, LICENSE, SECURITY, CONTRIBUTING, CHANGELOG, AGENTS, CLAUDE (`.md`) plus config files. Code in `src/` (or the toolchain's dir), tests in `tests/`, `scripts/` for things that touch live systems, `tools/` for repo generators, `config/` for samples, docs in `docs/` with `docs/README.md` once there are more than five, superseded material in `docs/archive/YYYY/`.
-- One `.env.example` with every variable the code reads (obviously fake placeholders). Examples are `<name>.example.<ext>`.
-
-<!-- ── repo-specific notes below this line ─────────────────────────────── -->
-
-## This repository
-
-Two root-run Bash scripts for Ubuntu, Debian and Amazon Linux 2023, installed on servers. There is no test suite; the gate is `make check` (bash -n, shellcheck at warning level, the config sourcing cleanly, and the diagram check). The systemd `OnCalendar` check runs only in CI.
+## Layout
 
 | Path | What lives there |
 |---|---|
@@ -44,5 +17,18 @@ Two root-run Bash scripts for Ubuntu, Debian and Amazon Linux 2023, installed on
 | `security-monitor.conf` | default config, installed to `/etc/security-monitor/` |
 | `tools/` | diagram generator, vendored brand kit, screenshot tooling (none of it runs on a host) |
 | `docs/` | setup, how it works, FAQ, troubleshooting; index in `docs/README.md` |
+| `llms.txt` | one-page summary for search engines; keep it true |
 
-Do not rename or repurpose, since installed hosts and users depend on them: the config variable names in `security-monitor.conf`, the `security-monitor` and `security-manager` commands and their sub-commands, the systemd unit and timer names, and the paths `/etc/security-monitor`, `/var/lib/security-monitor` and `/var/log/security-monitor`. A change to either script reaches a server only when someone re-runs `security-manager.sh install` there.
+Root holds only README, LICENSE, SECURITY, CONTRIBUTING, AGENTS (`.md`), `llms.txt` and config files.
+
+## Do not change
+
+Installed hosts and users depend on these names, so do not rename or repurpose them: the variable names in `security-monitor.conf`, the `security-monitor` and `security-manager` commands and their sub-commands, the systemd unit and timer names, and the paths `/etc/security-monitor`, `/var/lib/security-monitor` and `/var/log/security-monitor`. A change to either script reaches a server only when someone re-runs `security-manager.sh install` there.
+
+## Rules
+
+- Documentation must be true of the code: every command, flag, feature and count. Verify before writing; delete what cannot be verified. No hand-typed counts that can drift.
+- Commits are conventional (`fix:`, `feat:`, `docs:`, `refactor:`, `ci:`, `chore:`) and authored by the repo owner. No co-author trailers, session ids or "generated by" lines in commits, PRs, issues or comments.
+- Never force-push `main` and never commit secrets, keys, tokens, IP addresses, private hostnames or personal e-mail. The one public contact address is caputodav@gmail.com.
+- Style: directories `lowercase-kebab`, shell scripts `kebab-case.sh`, docs `docs/lowercase-kebab.md`. No em dashes in new copy.
+- README keeps its shape: centered header, emoji `##` headings separated by `---`, the architecture diagram drawn by `tools/gen_diagram.py`, a repo tree that matches `git ls-files`, and the credit footer as the last line.
