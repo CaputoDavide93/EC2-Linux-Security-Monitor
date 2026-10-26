@@ -63,7 +63,7 @@ The [setup guide](docs/setup.md) covers each step, alerts and removal. Read both
 | 📣 | **Alerting** | Runs your `ALERT_COMMAND` with the findings on stdin: mail, SNS, a Slack webhook, anything |
 | 🔄 | **Auto updates** | Applies pending updates during every scan (apt or dnf) and reports applied against still-available |
 | 🧬 | **Fresh definitions** | Runs `freshclam` before each scan, pausing the service so it cannot hold the database lock |
-| 📊 | **Status dashboard** | Real state only: scan freshness, 5-point compliance score, services, signature version and age |
+| 📊 | **Status dashboard** | Scan freshness, a 5-point compliance score, services, signature version and age, all read from the live system |
 | ⏰ | **systemd timers** | Daily scan and 6-hourly health check, `Persistent=true` so a stopped instance catches up |
 | 🩺 | **Self-healing health check** | Restarts dead services, refreshes stale definitions, re-enables stopped timers |
 | ⚙️ | **Single config file** | One `/etc/security-monitor/security-monitor.conf` drives behaviour and what the dashboard reports |
@@ -104,7 +104,7 @@ Both read the same config file, so a schedule or path is stated in exactly one p
 | Requirement | Notes |
 |-------------|-------|
 | Linux + systemd | Timers and services are managed with `systemctl`; `install` refuses to run without it |
-| Bash 4.0+ | Both scripts are pure Bash |
+| Bash 4.0+ | Both scripts are plain Bash |
 | Root access | `install`, `uninstall`, `health`, and `scan` need root. `status` does **not** |
 | Internet access | To download ClamAV packages and virus definitions |
 
@@ -138,7 +138,7 @@ security-monitor status        # dashboard, no sudo needed
 
 ## ⚙️ Configuration
 
-Everything lives in **`/etc/security-monitor/security-monitor.conf`** (installed from
+All settings are in **`/etc/security-monitor/security-monitor.conf`** (installed from
 [security-monitor.conf](security-monitor.conf), and never overwritten once present). It is
 sourced by both scripts, so a value set here changes behaviour *and* what the dashboard
 reports.
@@ -204,8 +204,6 @@ safer for hosts where an application might depend on a flagged file.
 
 `uninstall` deletes the data directory, and warns first if anything is still quarantined.
 </details>
-
----
 
 ---
 
@@ -300,8 +298,6 @@ sudo systemctl start security-monitor-scan     # run one now, out of band
 
 Change the schedule in the config file, then re-run `sudo security-manager install`. Editing
 the unit files directly works too, but `install` will overwrite them.
-
----
 
 ---
 
