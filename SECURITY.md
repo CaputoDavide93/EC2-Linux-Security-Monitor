@@ -46,16 +46,16 @@ sudo ./security-manager.sh install
 
 - **No telemetry.** Nothing is sent anywhere unless *you* configure `ALERT_COMMAND`.
 - **Scan logs** (`/var/log/security-monitor/scan-*.log`) contain absolute paths of scanned
-  and infected files — that is a map of the filesystem. Treat them as confidential. They are
+  and infected files, which is a map of the filesystem. Treat them as confidential. They are
   pruned after `LOG_RETENTION_DAYS` (default 30).
 - **`status.json`** is written `0644` (world-readable, so the dashboard runs without root) and
   holds counts and timestamps only.
 - **Quarantine** (`$QUARANTINE_DIR`, `0700`, root-owned) contains **live malware**. Files are
-  moved rather than deleted so false positives are recoverable — which means the directory is
+  moved rather than deleted so false positives are recoverable, which means the directory is
   hostile. Don't back it up to shared storage, don't copy files out of it to inspect them on
   a workstation, and remember `uninstall` deletes it (it warns first if it isn't empty).
 - **`ALERT_COMMAND`** is run via `sh -c` as root with the findings on stdin. It is arbitrary
-  code from the config file, and the findings include infected file paths — so anything you
+  code from the config file, and the findings include infected file paths, so anything you
   pipe them to receives sensitive data. Keep its credentials out of the config file; use an
   instance role or a file readable only by root.
 - **No secrets are stored by this project.** The config file holds no credentials, and
@@ -67,7 +67,7 @@ sudo ./security-manager.sh install
 
 - [ ] Both scripts reviewed before install
 - [ ] `/var/log/security-monitor/` and `/var/lib/security-monitor/` are not world-readable
-- [ ] `QUARANTINE_ENABLED` set deliberately — `no` if an application might depend on a
+- [ ] `QUARANTINE_ENABLED` set deliberately: `no` if an application might depend on a
       flagged file, `yes` to contain what's found
 - [ ] `ALERT_COMMAND` configured, and tested with the EICAR test file
 - [ ] Unattended updates acceptable for this host (they can restart services)

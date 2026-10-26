@@ -59,10 +59,13 @@ readonly TOTAL_STEPS=9
 
 detect_os() {
     if [ -r /etc/os-release ]; then
+        # Read os-release in a fresh bash: it assigns VERSION, which this script
+        # declares readonly (a subshell would inherit that), and under `set -e`
+        # the assignment error is fatal.
         # shellcheck source=/dev/null
-        . /etc/os-release
-        OS="${ID:-unknown}"
-        VER="${VERSION_ID:-unknown}"
+        OS=$(bash -c '. /etc/os-release; echo "${ID:-unknown}"')
+        # shellcheck source=/dev/null
+        VER=$(bash -c '. /etc/os-release; echo "${VERSION_ID:-unknown}"')
     fi
 }
 
