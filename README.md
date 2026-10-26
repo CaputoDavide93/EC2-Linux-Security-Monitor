@@ -309,8 +309,9 @@ the unit files directly works too, but `install` will overwrite them.
 
 ```text
 EC2-Linux-Security-Monitor/
-├── .github/workflows/
-│   └── lint.yml              # 🧪 shellcheck, bash -n, diagram check, OnCalendar validation
+├── .github/
+│   ├── dependabot.yml        # 🔄 monthly GitHub Actions updates
+│   └── workflows/lint.yml              # 🧪 shellcheck, bash -n, diagram check, OnCalendar validation
 ├── docs/
 │   ├── assets/               # 🗺️ diagrams, screenshots, brand icon, social preview
 │   ├── README.md             # 📚 docs index

@@ -32,3 +32,17 @@ This repository follows Davide Caputo's house standards. The full spec is
 - One `.env.example` with every variable the code reads (obviously fake placeholders). Examples are `<name>.example.<ext>`.
 
 <!-- ── repo-specific notes below this line ─────────────────────────────── -->
+
+## This repository
+
+Two root-run Bash scripts for Ubuntu, Debian and Amazon Linux 2023, installed on servers. There is no test suite; the gate is `make check` (bash -n, shellcheck at warning level, the config sourcing cleanly, and the diagram check). The systemd `OnCalendar` check runs only in CI.
+
+| Path | What lives there |
+|---|---|
+| `security-monitor.sh` | scan, quarantine, alerting, `status` dashboard |
+| `security-manager.sh` | install, uninstall, health check |
+| `security-monitor.conf` | default config, installed to `/etc/security-monitor/` |
+| `tools/` | diagram generator, vendored brand kit, screenshot tooling (none of it runs on a host) |
+| `docs/` | setup, how it works, FAQ, troubleshooting; index in `docs/README.md` |
+
+Do not rename or repurpose, since installed hosts and users depend on them: the config variable names in `security-monitor.conf`, the `security-monitor` and `security-manager` commands and their sub-commands, the systemd unit and timer names, and the paths `/etc/security-monitor`, `/var/lib/security-monitor` and `/var/log/security-monitor`. A change to either script reaches a server only when someone re-runs `security-manager.sh install` there.
