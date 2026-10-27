@@ -31,7 +31,7 @@ Both timers use `Persistent=true`, so a run missed while the instance was stoppe
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/scan-sequence-dark.svg">
-  <img src="assets/scan-sequence-light.svg" width="100%" alt="The scan timer starts security-monitor, which runs freshclam, upgrades packages, runs clamscan, writes status.json, alerts only if files were infected, and prunes old logs.">
+  <img src="assets/scan-sequence-light.svg" width="100%" alt="The scan timer starts Security Monitor, which runs freshclam, upgrades packages, runs clamscan, writes status.json, alerts only if files were infected, and prunes old logs.">
 </picture>
 
 ## The dashboard
