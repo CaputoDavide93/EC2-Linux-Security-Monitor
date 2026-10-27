@@ -223,6 +223,22 @@ class Canvas:
 # One accent (security-monitor, the scan), every edge labelled with what
 # crosses it, and the footer says the one fact a reader must not miss.
 
+def card(k, x, y, w, h, title, lines=(), *, icon=None, tone="plain"):
+    """A box whose sub-lines may be monospace: `lines` holds strings, or
+    (text, True) for something literally typed, such as an endpoint."""
+    rows = [(r, False) if isinstance(r, str) else r for r in lines]
+    svg = k.box(x, y, w, h, title, [t for t, _ in rows], icon=icon, tone=tone)
+    c = k.c
+    colour = {"accent": c["on_accent"], "warn": c["warn"]}.get(tone, c["sub"])
+    for i, (t, mono) in enumerate(rows):
+        if mono:
+            plain = k.text(x + 16, y + 52 + i * 18, t, size=12.5, colour=colour,
+                           opacity="0.85" if tone == "accent" else None)
+            svg = svg.replace(plain, k.text(x + 16, y + 52 + i * 18, t, size=12,
+                                            colour=colour, font=MONO))
+    return svg
+
+
 def architecture(scheme):
     """Two timers, two scripts, one config file, and what a scan touches."""
     k = Canvas(1180, 800, scheme,
@@ -241,22 +257,22 @@ def architecture(scheme):
     st = ys[3] + 30                           # where the trunk turns into the result box
     k.add(
         # column 0: what starts things
-        k.box(xs[0], ys[0], W, H, "Scan timer", ["SCAN_SCHEDULE, 02:00 daily", "Persistent=true"], icon="clock"),
-        k.box(xs[0], ys[2], W, H, "Health timer", ["HEALTH_SCHEDULE, every 6 hours", "Persistent=true"], icon="clock"),
+        k.box(xs[0], ys[0], W, H, "Scan Timer", ["SCAN_SCHEDULE, 02:00 daily", "Persistent=true"], icon="clock"),
+        k.box(xs[0], ys[2], W, H, "Health Timer", ["HEALTH_SCHEDULE, every 6 hours", "Persistent=true"], icon="clock"),
         k.box(xs[0], ys[3], W, H, "Operator", ["Checks the host from a shell"], icon="user"),
         # column 1: the two scripts and the file they share
-        k.box(xs[1], ys[0], W, H, "security-monitor", ["Refreshes, patches, scans,", "records and alerts, as root"],
+        card(k, xs[1], ys[0], W, H, "Security Monitor", [("security-monitor.sh", True), "Refreshes, patches, scans,", "records and alerts, as root"],
               icon="shield", tone="accent"),
-        k.box(xs[1], ys[1], W, H, "Config file", ["/etc/security-monitor/", "security-monitor.conf"], icon="sliders"),
-        k.box(xs[1], ys[2], W, H, "security-manager", ["Installs units; health repairs", "services, definitions, timers"],
+        k.box(xs[1], ys[1], W, H, "Config File", ["/etc/security-monitor/", "security-monitor.conf"], icon="sliders"),
+        card(k, xs[1], ys[2], W, H, "Security Manager", [("security-manager.sh", True), "Installs units; health repairs", "services, definitions, timers"],
               icon="wrench"),
-        k.box(xs[1], ys[3], W, H, "Status dashboard", ["Freshness, compliance score,", "services, signature age"],
+        k.box(xs[1], ys[3], W, H, "Status Dashboard", ["Freshness, compliance score,", "services, signature age"],
               icon="chart"),
         # column 2: what one scan touches
         k.box(xs[2], ys[0], W, H, "ClamAV", ["Definitions from ClamAV mirrors,", "recursive scan of the paths"], icon="bug"),
-        k.box(xs[2], ys[1], W, H, "apt / dnf", ["Pending updates applied", "from the distro repositories"], icon="box"),
-        k.box(xs[2], ys[2], W, H, "ALERT_COMMAND", ["mail, SNS, webhook, anything", "subject and findings"], icon="bell"),
-        k.box(xs[2], ys[3], W, H, "Scan result", ["status.json, quarantine/ (0700)", "/var/lib/security-monitor"],
+        card(k, xs[2], ys[1], W, H, "Package Manager", [("apt or dnf", True), "Pending updates applied", "from the distro repositories"], icon="box"),
+        card(k, xs[2], ys[2], W, H, "Alert Command", [("ALERT_COMMAND", True), "mail, SNS, webhook, anything", "subject and findings"], icon="bell"),
+        k.box(xs[2], ys[3], W, H, "Scan Result", ["status.json, quarantine/ (0700)", "/var/lib/security-monitor"],
               icon="database"),
         # timers start the scripts
         k.edge([(xs[0] + W + 8, mid[0]), (xs[1] - 8, mid[0])], label="scan $SCAN_MODE"),
@@ -282,51 +298,47 @@ def architecture(scheme):
 
 
 def scan_sequence(scheme):
-    """One scheduled scan, end to end, in the order security-monitor runs it."""
-    k = Canvas(1180, 580, scheme,
-               "The scan timer starts security-monitor, which runs freshclam with the service "
-               "paused, upgrades packages, runs clamscan and reads its exit code, writes "
-               "status.json, sends the findings to ALERT_COMMAND only if files were infected, "
-               "and prunes old scan logs.")
+    """One scheduled scan, end to end, in the order security-monitor runs it.
+    Cards, not lifelines: eight steps, left to right, then on to the next row."""
+    k = Canvas(1180, 430, scheme,
+               "The scan timer starts Security Monitor, which runs freshclam with the "
+               "definitions service paused, upgrades packages with apt or dnf, then scans with "
+               "clamscan and reads its exit code. It writes status.json, sends the findings to "
+               "ALERT_COMMAND only if files were infected, and prunes old scan logs.")
     c = k.c
-    T, M, C, P, A = 124, 354, 594, 830, 1052
-    lanes = [("Scan timer", T, "clock"), ("security-monitor", M, "shield"),
-             ("ClamAV", C, "bug"), ("apt / dnf", P, "box"), ("ALERT_COMMAND", A, "bell")]
-    top, bottom = 84, 512
-    for name, x, icon in lanes:
-        w = 196
-        tone = "accent" if x == M else "plain"
-        k.add(k.box(x - w / 2, 26, w, 44, name, icon=icon, tone=tone),
-              f'<line x1="{x}" y1="{top - 14}" x2="{x}" y2="{bottom}" stroke="{c["border"]}" '
-              f'stroke-width="1" stroke-dasharray="4 5"/>')
-
-    def msg(y, x1, x2, text, *, dash=False, mono=True, at=0.5):
-        d = 8 if x2 > x1 else -8
-        return k.edge([(x1 + d, y), (x2 - d, y)], label=text, dash=dash, mono=mono, label_at=at)
-
-    def self_msg(y, x, text):
-        return (k.edge([(x, y), (x + 54, y), (x + 54, y + 26), (x + 6, y + 26)]) +
-                k.text(x + 66, y + 4, text, size=11.5, font=MONO, colour=c["chip"]))
-
-    # The alt block: the one decision in a scan.
-    k.add(f'<rect x="{T + 40}" y="366" width="{A + 96 - T - 40}" height="76" rx="8" fill="none" '
-          f'stroke="{c["border"]}" stroke-width="1" stroke-dasharray="5 4"/>',
-          k.text(T + 54, 384, "if infected files were found", size=11.5, colour=c["sub"], weight="600"))
+    W, H = 250, 120
+    xs = [24, 24 + 294, 24 + 2 * 294, 24 + 3 * 294]
+    y1, y2 = 40, 224
+    m1, m2 = y1 + H / 2, y2 + H / 2
     k.add(
-        msg(104, T, M, "scan $SCAN_MODE"),
-        msg(144, M, C, "freshclam, service paused"),
-        # Labels to the package manager sit between its lifeline and ClamAV's.
-        msg(184, M, P, "upgrade what is pending", at=0.761),
-        msg(218, P, M, "applied, still available", dash=True, mono=False, at=0.239),
-        msg(258, M, C, "clamscan -r -i --move"),
-        msg(292, C, M, "exit 0 clean, 1 infected, 2+ error", dash=True, mono=False),
-        self_msg(322, M, "write status.json"),
-        msg(420, M, A, "subject and findings on stdin", mono=False),
-        self_msg(466, M, "prune old scan logs"),
-        k.footer("A dashed arrow is a reply. The result is written before the alert is sent, "
-                 "so the dashboard is current even when the alert command fails."),
+        card(k, xs[0], y1, W, H, "Scan Timer", ["02:00 daily by default", ("scan $SCAN_MODE", True)],
+             icon="clock"),
+        card(k, xs[1], y1, W, H, "Security Monitor", ["Runs the steps in order,", "as root"],
+             icon="shield", tone="accent"),
+        card(k, xs[2], y1, W, H, "Refresh Definitions", [("freshclam", True),
+             "service paused while it runs,", "restarted after"], icon="bug"),
+        card(k, xs[3], y1, W, H, "Apply Updates", ["Pending updates applied:",
+             ("apt-get upgrade -y", True), ("dnf upgrade -y --refresh", True)], icon="box"),
+        card(k, xs[0], y2, W, H, "Scan With ClamAV", [("clamscan -r -i --move", True),
+             "exit 0 clean, 1 infected,", "2 or more is an error"], icon="bug"),
+        card(k, xs[1], y2, W, H, "Record the Result", [("status.json", True),
+             "written before any alert"], icon="database"),
+        card(k, xs[2], y2, W, H, "Alert Command", [("ALERT_COMMAND", True),
+             "only if files were infected,", "subject and findings on stdin"], icon="bell"),
+        card(k, xs[3], y2, W, H, "Prune Old Logs", ["Old scan logs are removed"], icon="file"),
     )
+    for row, y in ((0, m1), (1, m2)):
+        for i in range(3):
+            k.add(k.edge([(xs[i] + W + 8, y), (xs[i + 1] - 8, y)]))
+    # The first row ends by dropping back to the start of the second.
+    k.add(k.edge([(xs[3] + W / 2, y1 + H + 8), (xs[3] + W / 2, 192), (xs[0] + W / 2, 192),
+                  (xs[0] + W / 2, y2 - 8)]),
+          k.text(xs[2] - 6, 184, "then the scan itself", size=11.5, font=MONO,
+                 colour=c["chip"], anchor="middle"))
+    k.add(k.footer("The result is written before the alert is sent, so the dashboard is "
+                   "current even when the alert command fails."))
     return k.render()
+
 
 DIAGRAMS = {
     "architecture": architecture,
